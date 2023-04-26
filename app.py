@@ -253,5 +253,16 @@ def search_posts():
 	return jsonify(result)
 
 
+@app.route('/posts/user/<int:user_id>', methods=['GET'])
+def get_posts_by_user(user_id):
+	if user_id not in users:
+		abort(404)
+
+	with posts_lock:
+		user_posts = [post for post in posts.values() if post.get('user_id') == user_id]
+
+	return jsonify(user_posts)
+
+
 if __name__ == '__main__':
 	app.run(debug=True)
