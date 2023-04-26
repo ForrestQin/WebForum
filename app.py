@@ -127,6 +127,9 @@ def register():
 	data = request.get_json()
 	username = data.get('username')
 	password = data.get('password')
+	email = data.get('email', '')
+	name = data.get('name', '')
+	avatar = data.get('avatar', '')
 
 	if not username or not password:
 		return jsonify({'err': 'Missing username or password'}), 400
@@ -134,7 +137,7 @@ def register():
 	if username in [user.username for user in users.values()]:
 		return jsonify({'err': 'Username already exists'}), 400
 
-	user = User(username)
+	user = User(username, email, name, avatar)
 	user.set_password(password)
 	user.user_key = secrets.token_hex(64)
 	users[user_id_counter] = user
@@ -166,9 +169,56 @@ def login():
 	return jsonify({'user_id': user_id, 'user_key': users[user_id].user_key}), 200
 
 
+# API endpoint to retrieve a user's metadata
+@app.route('/user/<int:user_id>/metadata', methods=['GET'])
+def get_user_metadata(user_id):
+	user = users.get(user_id)
+	if user is None:
+		abort(404)
+
+	return jsonify({
+		'username': user.username,
+		'email': user.email,
+		'name': user.name,
+		'avatar': user.avatar
+	})
+
+
+# API endpoint to edit a user's metadata
+@app.route('/user/<int:user_id>/metadata', methods=['PUT'])
+def edit_user_metadata(user_id):
+	user = users.get(user_id)
+	if user is None:
+		abort(404)
+
+	data = request.get_json()
+	user_key = data.get('user_key')
+
+	if user_key != user.user_key:
+		abort(403)
+
+	name = data.get('name')
+	avatar = data.get('avatar')
+
+	if name:
+		user.name = name
+	if avatar:
+		user.avatar = avatar
+
+	return jsonify({
+		'username': user.username,
+		'email': user.email,
+		'name': user.name,
+		'avatar': user.avatar
+	})
+
+
 class User:
-	def __init__(self, username):
+	def __init__(self, username, email, name=None, avatar=None):
 		self.username = username
+		self.email = email
+		self.name = name
+		self.avatar = avatar
 		self.password_hash = None
 		self.user_key = None
 
