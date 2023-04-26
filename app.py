@@ -32,7 +32,7 @@ def create_post():
 	with posts_lock:
 		post_id = max(posts.keys(), default=0) + 1
 		post_key = create_post_key()
-		timestamp = datetime.utcnow().isoformat()
+		timestamp = datetime.now().isoformat()
 
 		posts[post_id] = {
 			'id': post_id,
@@ -169,7 +169,6 @@ def login():
 	return jsonify({'user_id': user_id, 'user_key': users[user_id].user_key}), 200
 
 
-# API endpoint to retrieve a user's metadata
 @app.route('/user/<int:user_id>/metadata', methods=['GET'])
 def get_user_metadata(user_id):
 	user = users.get(user_id)
@@ -184,7 +183,6 @@ def get_user_metadata(user_id):
 	})
 
 
-# API endpoint to edit a user's metadata
 @app.route('/user/<int:user_id>/metadata', methods=['PUT'])
 def edit_user_metadata(user_id):
 	user = users.get(user_id)
@@ -227,6 +225,32 @@ class User:
 
 	def check_password(self, password):
 		return check_password_hash(self.password_hash, password)
+
+
+@app.route('/posts/search', methods=['GET'])
+def search_posts():
+	start_date_str = request.args.get('start_date', None)
+	end_date_str = request.args.get('end_date', None)
+
+	try:
+		start_date = datetime.fromisoformat(start_date_str) if start_date_str else None
+		end_date = datetime.fromisoformat(end_date_str) if end_date_str else None
+	except ValueError:
+		return jsonify({'err': 'Invalid date format'}), 400
+
+	result = []
+	with posts_lock:
+		for post in posts.values():
+			post_date = datetime.fromisoformat(post['timestamp'])
+			if (start_date is None or post_date >= start_date) and (end_date is None or post_date <= end_date):
+				result.append({
+					'id': post['id'],
+					'timestamp': post['timestamp'],
+					'msg': post['msg'],
+					'user_id': post.get('user_id'),
+				})
+
+	return jsonify(result)
 
 
 if __name__ == '__main__':
