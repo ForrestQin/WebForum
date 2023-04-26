@@ -1,3 +1,5 @@
+import string
+
 from flask import Flask, request, jsonify, abort, make_response
 import secrets
 from datetime import datetime
@@ -262,6 +264,39 @@ def get_posts_by_user(user_id):
 		user_posts = [post for post in posts.values() if post.get('user_id') == user_id]
 
 	return jsonify(user_posts)
+
+def search(query, data):
+    query_words = query.lower().translate(str.maketrans('', '', string.punctuation)).split()
+    results = []
+
+    for item in data:
+        msg_words = item['msg'].lower().translate(str.maketrans('', '', string.punctuation)).split()
+        if any(word in msg_words for word in query_words):
+            results.append(item)
+
+    return results
+
+
+@app.route('/search', methods=['GET'])
+def search_posts_based_content():
+	query = request.args.get('query', '')
+
+	if not query:
+		abort(400)
+
+	with posts_lock:
+		results = search(query, posts.values())
+
+	response = [
+		{
+			'id': post['id'],
+			'timestamp': post['timestamp'],
+			'msg': post['msg'],
+			'user_id': post.get('user_id')
+		} for post in results
+	]
+
+	return jsonify(response)
 
 
 if __name__ == '__main__':
