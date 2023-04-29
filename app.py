@@ -1,6 +1,6 @@
 import string
 
-from flask import Flask, request, jsonify, abort, make_response
+from flask import Flask, request, jsonify, abort, make_response, json
 import secrets
 from datetime import datetime
 import threading
@@ -15,11 +15,44 @@ user_id_counter = 1
 
 
 def create_post_key():
+	"""
+    Generate a unique key for a new post.
+
+    >>> len(create_post_key())
+    64
+
+    """
 	return secrets.token_hex(32)
 
 
 @app.route('/post', methods=['POST'])
 def create_post():
+	'''
+	>>> # Register a user and get user_id and user_key
+	>>> user_data = {'username': 'john_doe', 'password': 'password'}
+	>>> response = requests.post('http://localhost:5000/register', json=user_data)
+	>>> user_id = response.json()['user_id']
+	>>> user_key = response.json()['user_key']
+
+	>>> # Create a post with the user's credentials
+	>>> post_data = {'msg': 'Hello world', 'user_id': user_id, 'user_key': user_key}
+	>>> response = requests.post('http://localhost:5000/post', json=post_data)
+
+	>>> # Check if the post was created successfully
+	>>> response.status_code
+	200
+	>>> post = response.json()
+	>>> post['id']
+	1
+	>>> len(post['key'])
+	64
+	>>> post['timestamp'][:10] == datetime.now().strftime('%Y-%m-%d')
+	True
+	>>> post['msg']
+	'Hello world'
+	>>> post['user_id']
+	user_id
+	'''
 	print("create_post")
 	if not request.json or 'msg' not in request.json or not isinstance(request.json['msg'], str):
 		abort(400)
@@ -126,12 +159,14 @@ from werkzeug.security import generate_password_hash, check_password_hash
 def register():
 	print("register")
 	global user_id_counter
-	data = request.get_json()
-	username = data.get('username')
-	password = data.get('password')
-	email = data.get('email', '')
-	name = data.get('name', '')
-	avatar = data.get('avatar', '')
+	#data = request.get_json()
+	#data = request.args.get('username')
+	#print(data)
+	username = request.args.get('username')
+	password = request.args.get('password')
+	email = request.args.get('email', '')
+	name = request.args.get('name', '')
+	avatar = request.args.get('avatar', '')
 
 	if not username or not password:
 		return jsonify({'err': 'Missing username or password'}), 400
@@ -214,7 +249,7 @@ def edit_user_metadata(user_id):
 
 
 class User:
-	def __init__(self, username, email, name=None, avatar=None):
+	def __init__(self, username, email='', name='', avatar=''):
 		self.username = username
 		self.email = email
 		self.name = name
