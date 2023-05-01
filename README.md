@@ -121,21 +121,21 @@ We encountered some issues with passing parameters to endpoints. Parameters can 
      ```
    - Response: List of posts match the query
 
-To test our endpoints, we write the following tests:
-`POST /user/register` User 1 Registration
-`POST /user/login` User 1 Login
-`GET /user/{{user_id1}}/metadata` Get 1 User Metadata
-`PUT /user/{{user_id1}}/metadata` Edit User 1 Metadata
-`GET /user/{{user_id1}}/metadata` Get User 1 Metadata again
-`POST /post` Create a Post by User 1
-`GET /post/{{post_id1}}` Read the Post by User 1
-`POST /user/register` User 2 Registration
-`POST /user/login` User 2 Login
-`POST /post` Create Post 2 by User 2
-`GET /post/{{post_id2}}` Read the Post 2
-`GET /posts/search?start_date={{post_timestamp1}}&end_date={{post_timestamp1}}` Search Posts by date and time
-`GET /posts/user/{{user_id1}}` Search Posts by User
-`GET /search?query=2` Fulltext search
-`DEL /post/{{post_id2}}/delete/{{post_key2}}` Delete Post 2
+To test our endpoints, we write the following tests:\
+`POST /user/register` User 1 Registration\
+`POST /user/login` User 1 Login\
+`GET /user/{{user_id1}}/metadata` Get User 1 Metadata\
+`PUT /user/{{user_id1}}/metadata` Edit User 1 Metadata\
+`GET /user/{{user_id1}}/metadata` Get User 1 Metadata again\
+`POST /post` Create a Post by User 1\
+`GET /post/{{post_id1}}` Read the Post by User 1\
+`POST /user/register` User 2 Registration\
+`POST /user/login` User 2 Login\
+`POST /post` Create Post 2 by User 2\
+`GET /post/{{post_id2}}` Read the Post 2\
+`GET /posts/search?start_date={{post_timestamp1}}&end_date={{post_timestamp1}}` Search Posts by date and time\
+`GET /posts/user/{{user_id1}}` Search Posts by User\
+`GET /search?query=2` Fulltext search\
+`DEL /post/{{post_id2}}/delete/{{post_key2}}` Delete Post 2\
 
 To run these tests above, run `./test.sh` or `sudo ./test.sh`.
