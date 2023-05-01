@@ -6,5 +6,6 @@ trap 'kill $PID' EXIT
 ./run.sh &
 PID=$!
 
-newman run forum_multiple_posts.postman_collection.json -e env.json
-newman run forum_post_read_delete.postman_collection.json -n 50
+sleep 5
+
+newman run forum_test_collection.postman_collection.json --env-var baseUrl=http://127.0.0.1:5000 --bail
