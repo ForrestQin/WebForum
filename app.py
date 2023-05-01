@@ -18,6 +18,7 @@ def create_post_key():
 	return secrets.token_hex(32)
 
 
+# Endpoint #1: create a post with POST /post
 @app.route('/post', methods=['POST'])
 def create_post():
 	print("create_post")
@@ -26,10 +27,21 @@ def create_post():
 
 	user_id = request.json.get('user_id')
 	user_key = request.json.get('user_key')
+	metadata = None
 
 	if user_id and user_key:
+		if not isinstance(request.json.get('user_id'), int):
+			user_id = int(request.json.get('user_id'))
 		if not user_id in users or users[user_id].user_key != user_key:
 			abort(403)
+		else:
+			user = users.get(user_id)
+			metadata = {
+				'username': user.username,
+				'email': user.email,
+				'name': user.name,
+				'avatar': user.avatar
+			}
 
 	with posts_lock:
 		post_id = max(posts.keys(), default=0) + 1
@@ -42,6 +54,7 @@ def create_post():
 			'timestamp': timestamp,
 			'msg': request.json['msg'],
 			'user_id': user_id if user_id and user_key else None,
+			'user_data': metadata if metadata and user_id and user_key else None,
 		}
 
 	return jsonify({
@@ -51,6 +64,7 @@ def create_post():
 	})
 
 
+#Endpoint #2: read a post with GET /post/{{id}}
 @app.route('/post/<int:post_id>', methods=['GET'])
 def read_post(post_id):
 	print("read_post")
@@ -68,10 +82,19 @@ def read_post(post_id):
 
 	if post.get('user_id'):
 		response['user_id'] = post['user_id']
+		user = users.get(post['user_id'])
+		metadata = {
+			'username': user.username,
+			'email': user.email,
+			'name': user.name,
+			'avatar': user.avatar
+		}
+		response['user_data'] = metadata
 
 	return jsonify(response)
 
 
+# Endpoint #3: delete a post with DELETE /post/{{id}}/delete/{{key}}
 @app.route('/post/<int:post_id>/delete/<string:post_key>', methods=['DELETE'])
 # update postman test case
 def delete_post(post_id, post_key):
@@ -101,6 +124,14 @@ def delete_post(post_id, post_key):
 
 	if user_id:
 		response['user_id'] = user_id
+		user = users.get(post['user_id'])
+		metadata = {
+			'username': user.username,
+			'email': user.email,
+			'name': user.name,
+			'avatar': user.avatar
+		}
+		response['user_data'] = metadata
 
 	return jsonify(response)
 
@@ -123,6 +154,9 @@ def forbidden(error):
 from werkzeug.security import generate_password_hash, check_password_hash
 
 
+# Extensions
+
+# 1. Users and user keys
 @app.route('/user/register', methods=['POST'])
 def register():
 	print("register")
@@ -172,6 +206,7 @@ def login():
 	return jsonify({'user_id': user_id, 'user_key': users[user_id].user_key}), 200
 
 
+# 2. User profiles
 @app.route('/user/<int:user_id>/metadata', methods=['GET'])
 def get_user_metadata(user_id):
 	user = users.get(user_id)
@@ -230,6 +265,7 @@ class User:
 		return check_password_hash(self.password_hash, password)
 
 
+# 3. Date- and time-based range queries
 @app.route('/posts/search', methods=['GET'])
 def search_posts():
 	start_date_str = request.args.get('start_date', None)
@@ -246,18 +282,30 @@ def search_posts():
 		for post in posts.values():
 			post_date = datetime.fromisoformat(post['timestamp'])
 			if (start_date is None or post_date >= start_date) and (end_date is None or post_date <= end_date):
-				result.append({
+				response = {
 					'id': post['id'],
 					'timestamp': post['timestamp'],
-					'msg': post['msg'],
-					'user_id': post.get('user_id'),
-				})
+					'msg': post['msg']
+				}
+				user_id = post.get('user_id')
+				if user_id:
+					response['user_id'] = user_id
+					user = users.get(post['user_id'])
+					metadata = {
+						'username': user.username,
+						'email': user.email,
+						'name': user.name,
+						'avatar': user.avatar
+					}
+					response['user_data'] = metadata
+				result.append(response)
 
 	return jsonify(result)
 
 
+# 4. User-based range queries
 @app.route('/posts/user/<int:user_id>', methods=['GET'])
-def get_posts_by_user(user_id):
+def search_posts_by_user(user_id):
 	if user_id not in users:
 		abort(404)
 
@@ -278,6 +326,7 @@ def search(query, data):
     return results
 
 
+# 5. Fulltext search
 @app.route('/search', methods=['GET'])
 def search_posts_based_content():
 	query = request.args.get('query', '')
@@ -286,18 +335,29 @@ def search_posts_based_content():
 		abort(400)
 
 	with posts_lock:
-		results = search(query, posts.values())
+		post_results = search(query, posts.values())
 
-	response = [
-		{
+	result = []
+	for post in post_results:
+		response = {
 			'id': post['id'],
 			'timestamp': post['timestamp'],
 			'msg': post['msg'],
-			'user_id': post.get('user_id')
-		} for post in results
-	]
+		}
+		user_id = post.get('user_id')
+		if user_id:
+			response['user_id'] = user_id
+			user = users.get(post['user_id'])
+			metadata = {
+				'username': user.username,
+				'email': user.email,
+				'name': user.name,
+				'avatar': user.avatar
+			}
+			response['user_data'] = metadata
+		result.append(response)
 
-	return jsonify(response)
+	return jsonify(result)
 
 
 if __name__ == '__main__':
