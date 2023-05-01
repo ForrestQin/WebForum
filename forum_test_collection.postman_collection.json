@@ -1,102 +1,699 @@
 {
-  "info": {
-    "name": "Forum Test Collection",
-    "_postman_id": "some_random_uuid",
-    "description": "A collection of tests for the web forum backend",
-    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
-  },
-  "item": [
-    {
-      "name": "User Registration",
-      "request": {
-        "method": "POST",
-        "header": [
-          {
-            "key": "Content-Type",
-            "value": "application/json"
-          }
-        ],
-        "body": {
-          "mode": "raw",
-          "raw": "{\"username\": \"testuser\", \"password\": \"testpassword\", \"email\": \"test@example.com\"}"
-        },
-        "url": {
-          "raw": "{{baseUrl}}/user/register",
-          "host": ["{{baseUrl}}"],
-          "path": ["user", "register"]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "User Login",
-      "request": {
-        "method": "POST",
-        "header": [
-          {
-            "key": "Content-Type",
-            "value": "application/json"
-          }
-        ],
-        "body": {
-          "mode": "raw",
-          "raw": "{\"username\": \"testuser\", \"password\": \"testpassword\"}"
-        },
-        "url": {
-          "raw": "{{baseUrl}}/user/login",
-          "host": ["{{baseUrl}}"],
-          "path": ["user", "login"]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "Get User Metadata",
-      "request": {
-        "method": "GET",
-        "header": [],
-        "url": {
-          "raw": "{{baseUrl}}/user/1/metadata",
-          "host": ["{{baseUrl}}"],
-          "path": ["user", "1", "metadata"]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "Create a Post",
-      "request": {
-        "method": "POST",
-        "header": [
-          {
-            "key": "Content-Type",
-            "value": "application/json"
-          }
-        ],
-        "body": {
-          "mode": "raw",
-          "raw": "{\"msg\": \"Hello, World!\"}"
-        },
-        "url": {
-          "raw": "{{baseUrl}}/post",
-          "host": ["{{baseUrl}}"],
-          "path": ["post"]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "Read a Post",
-      "request": {
-        "method": "GET",
-        "header": [],
-        "url": {
-          "raw": "{{baseUrl}}/post/1",
-          "host": ["{{baseUrl}}"],
-          "path": ["post", "1"]
-        }
-      },
-      "response": []
-    }
-  ]
+	"info": {
+		"_postman_id": "276d6011-b503-481a-8203-08f216ab87f3",
+		"name": "ForumTestCollection",
+		"description": "A collection of tests for the web forum backend",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "24047385"
+	},
+	"item": [
+		{
+			"name": "User 1 Registration",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 201\", function () {\r",
+							"    pm.response.to.have.status(201);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\": \"testuser\",\r\n    \"password\": \"testpassword\",\r\n    \"email\": \"test@example.com\"\r\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/user/register",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"user",
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "User 1 Login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"var jsonData = pm.response.json();\r",
+							"\r",
+							"pm.environment.set(\"user_id1\", jsonData.user_id);\r",
+							"pm.environment.set(\"user_key1\", jsonData.user_key);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\": \"testuser\", \"password\": \"testpassword\"\r\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/user/login",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"user",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get 1 User Metadata",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"User 1 data correct\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.avatar).to.eql(\"\");\r",
+							"    pm.expect(jsonData.email).to.eql(\"test@example.com\");\r",
+							"    pm.expect(jsonData.username).to.eql(\"testuser\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/user/{{user_id1}}/metadata",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"user",
+						"{{user_id1}}",
+						"metadata"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Edit User 1 Metadata",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"user_key\": \"{{user_key1}}\",\r\n    \"avatar\": \"https://unsplash.com/photos/ZCHj_2lJP00\",\r\n    \"name\": \"Test Name\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/user/{{user_id1}}/metadata",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"user",
+						"{{user_id1}}",
+						"metadata"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get User 1 Metadata again",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"User 1 data correct\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.avatar).to.eql(\"https://unsplash.com/photos/ZCHj_2lJP00\");\r",
+							"    pm.expect(jsonData.name).to.eql(\"Test Name\");\r",
+							"    pm.expect(jsonData.email).to.eql(\"test@example.com\");\r",
+							"    pm.expect(jsonData.username).to.eql(\"testuser\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/user/{{user_id1}}/metadata",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"user",
+						"{{user_id1}}",
+						"metadata"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create a Post by User 1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"var jsonData = pm.response.json();\r",
+							"\r",
+							"pm.environment.set(\"post_id1\", jsonData.id);\r",
+							"pm.environment.set(\"post_key1\", jsonData.key);\r",
+							"pm.environment.set(\"post_timestamp1\", jsonData.timestamp);\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"user_id\": \"{{user_id1}}\",\r\n    \"user_key\": \"{{user_key1}}\",\r\n    \"msg\": \"Post created by a user!\"\r\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/post",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"post"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Read the Post by User 1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Post by User 1 contents correct\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.id).to.eql(pm.environment.get(\"post_id1\"));\r",
+							"    pm.expect(jsonData.msg).to.eql(\"Post created by a user!\");\r",
+							"    pm.expect(jsonData.timestamp).to.eql(pm.environment.get(\"post_timestamp1\"));\r",
+							"    pm.expect(jsonData.user_data).to.eql({\r",
+							"        \"avatar\": \"https://unsplash.com/photos/ZCHj_2lJP00\",\r",
+							"        \"email\": \"test@example.com\",\r",
+							"        \"name\": \"Test Name\",\r",
+							"        \"username\": \"testuser\"\r",
+							"    });\r",
+							"    pm.expect(jsonData.user_id).to.eql(pm.environment.get(\"user_id1\"));\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/post/{{post_id1}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"post",
+						"{{post_id1}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "User 2 Registration",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 201\", function () {\r",
+							"    pm.response.to.have.status(201);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\": \"testuser2\",\r\n    \"password\": \"testpassword2\",\r\n    \"email\": \"test2@example.com\"\r\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/user/register",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"user",
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "User 2 Login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"var jsonData = pm.response.json();\r",
+							"\r",
+							"pm.environment.set(\"user_id2\", jsonData.user_id);\r",
+							"pm.environment.set(\"user_key2\", jsonData.user_key);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\": \"testuser2\", \"password\": \"testpassword2\"\r\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/user/login",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"user",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Post 2 by User 2",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"var jsonData = pm.response.json();\r",
+							"\r",
+							"pm.environment.set(\"post_id2\", jsonData.id);\r",
+							"pm.environment.set(\"post_key2\", jsonData.key);\r",
+							"pm.environment.set(\"post_timestamp2\", jsonData.timestamp);\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"user_id\": \"{{user_id2}}\",\r\n    \"user_key\": \"{{user_key2}}\",\r\n    \"msg\": \"Post created by User 2!\"\r\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/post",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"post"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Read the Post 2",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Post by User 2 contents correct\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.id).to.eql(pm.environment.get(\"post_id2\"));\r",
+							"    pm.expect(jsonData.msg).to.eql(\"Post created by User 2!\");\r",
+							"    pm.expect(jsonData.timestamp).to.eql(pm.environment.get(\"post_timestamp2\"));\r",
+							"    pm.expect(jsonData.user_data).to.eql({\r",
+							"        \"avatar\": \"\",\r",
+							"        \"email\": \"test2@example.com\",\r",
+							"        \"name\": \"\",\r",
+							"        \"username\": \"testuser2\"\r",
+							"    });\r",
+							"    pm.expect(jsonData.user_id).to.eql(pm.environment.get(\"user_id2\"));\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/post/{{post_id2}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"post",
+						"{{post_id2}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Search Posts by date and time",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Search by datetime results correct\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData[0].id).to.eql(pm.environment.get(\"post_id1\"));\r",
+							"    pm.expect(jsonData[0].msg).to.eql(\"Post created by a user!\");\r",
+							"    pm.expect(jsonData[0].timestamp).to.eql(pm.environment.get(\"post_timestamp1\"));\r",
+							"    pm.expect(jsonData[0].user_data).to.eql({\r",
+							"        \"avatar\": \"https://unsplash.com/photos/ZCHj_2lJP00\",\r",
+							"        \"email\": \"test@example.com\",\r",
+							"        \"name\": \"Test Name\",\r",
+							"        \"username\": \"testuser\"\r",
+							"    });\r",
+							"    pm.expect(jsonData[0].user_id).to.eql(pm.environment.get(\"user_id1\"));\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/posts/search?start_date={{post_timestamp1}}&end_date={{post_timestamp1}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"posts",
+						"search"
+					],
+					"query": [
+						{
+							"key": "start_date",
+							"value": "{{post_timestamp1}}"
+						},
+						{
+							"key": "end_date",
+							"value": "{{post_timestamp1}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Search Posts by User",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Search by user results correct\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData[0].id).to.eql(pm.environment.get(\"post_id1\"));\r",
+							"    pm.expect(jsonData[0].msg).to.eql(\"Post created by a user!\");\r",
+							"    pm.expect(jsonData[0].timestamp).to.eql(pm.environment.get(\"post_timestamp1\"));\r",
+							"    pm.expect(jsonData[0].user_data).to.eql({\r",
+							"        \"avatar\": \"https://unsplash.com/photos/ZCHj_2lJP00\",\r",
+							"        \"email\": \"test@example.com\",\r",
+							"        \"name\": \"Test Name\",\r",
+							"        \"username\": \"testuser\"\r",
+							"    });\r",
+							"    pm.expect(jsonData[0].user_id).to.eql(pm.environment.get(\"user_id1\"));\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/posts/user/{{user_id1}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"posts",
+						"user",
+						"{{user_id1}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Fulltext search",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Fulltext search contents correct\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData[0].id).to.eql(pm.environment.get(\"post_id2\"));\r",
+							"    pm.expect(jsonData[0].msg).to.eql(\"Post created by User 2!\");\r",
+							"    pm.expect(jsonData[0].timestamp).to.eql(pm.environment.get(\"post_timestamp2\"));\r",
+							"    pm.expect(jsonData[0].user_data).to.eql({\r",
+							"        \"avatar\": \"\",\r",
+							"        \"email\": \"test2@example.com\",\r",
+							"        \"name\": \"\",\r",
+							"        \"username\": \"testuser2\"\r",
+							"    });\r",
+							"    pm.expect(jsonData[0].user_id).to.eql(pm.environment.get(\"user_id2\"));\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/search?query=2",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"search"
+					],
+					"query": [
+						{
+							"key": "query",
+							"value": "2"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Post 2",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/post/{{post_id2}}/delete/{{post_key2}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"post",
+						"{{post_id2}}",
+						"delete",
+						"{{post_key2}}"
+					]
+				}
+			},
+			"response": []
+		}
+	]
 }
