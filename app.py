@@ -1,6 +1,6 @@
 import string
 
-from flask import Flask, request, jsonify, abort, make_response
+from flask import Flask, request, jsonify, abort, make_response, json
 import secrets
 from datetime import datetime
 import threading
@@ -73,6 +73,7 @@ def read_post(post_id):
 
 
 @app.route('/post/<int:post_id>/delete/<string:post_key>', methods=['DELETE'])
+# update postman test case
 def delete_post(post_id, post_key):
 	print("delete_post")
 	with posts_lock:
