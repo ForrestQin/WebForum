@@ -1,6 +1,6 @@
 # CS515 Project 2: Calculator Language
 Honglin Qin hqin4@stevens.edu,
-Siyan Liu,
+Siyan Liu sliu112@stevens.edu,
 Yetong Chen ychen12@stevens.edu
 
 This REST API allows you to manage posts and users. You can create, retrieve, and delete posts, as well as register, authenticate, and edit user metadata.
@@ -19,12 +19,12 @@ Run `sudo ./test.sh` or `./test.sh` to test the code.
 We tested our code using the postman collections `forum_test_collection.postman_collection.json`. The environment variables are in the `env_test.json`.
 
 ## Bugs or issues
-Most of the bugs we encounter are related to TypeError.
+Most of the bugs we encounter are related to TypeError and passing parameters.
 
 ## Resolved issue
+We encountered some issues with passing parameters to endpoints. Parameters can be provided to endpoints through path, body, and query. Path parameters are included in the endpoint's URI, which resembles a web address. Body parameters, also known as payloads, contain the data that the endpoint is designed to manipulate. Here we use JSON format. Most endpoints that require a body parameter aim to modify the resource's data. Query parameters let users adjust the scope of the request to retrieve a subset of the resource, filtering out resources that don't match specific criteria such as name, type, size, or status. To create a query in a URI, add a question mark (`?`) at the end of the endpoint to indicate that query information is coming. The parameter name and value are then provided in the format `name=value`, with additional parameters separated by an ampersand (`&`). When we execute `POST /user/register`, we pass the parameters as a query and receive them as the body, with the endpoint not receiving the parameters directly. After understanding the three modes of passing parameters, we modified the mode of passing parameters for each endpoint.
 
-
-## Baseline Posts
+## Baseline
 **Create a new post**
    - Endpoint: `/post` (POST)
    - Payload: JSON with 'msg' key and optionally 'user_id' and 'user_key'
